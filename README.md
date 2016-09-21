@@ -1,6 +1,6 @@
 CoreScope: Graph Mining Using k-Core Analysis - Patterns, Anomalies and Algorithms
 ========================
-**CoreScope** is a set of algorithms based on the empirical patterns related to k-coresxs in real-world graphs.
+**CoreScope** is a set of algorithms based on empirical patterns related to k-cores in real-world graphs.
 **CoreScope** consists of the following algorithms:
  * *CoreA*: anomaly detection algorithm based on Mirror Pattern
  * *CoreD*: streaming algorithm for degeneracy based on Core-Triangle Pattern
