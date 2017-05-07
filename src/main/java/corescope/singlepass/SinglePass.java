@@ -3,7 +3,7 @@
  * CoreScope: Graph Mining Using k-Core Analysis - Patterns, Anomalies, and Algorithms
  * Authors: Kijung Shin, Tina Eliassi-Rad, and Christos Faloutsos
  *
- * Version: 1.0
+ * Version: 1.1
  * Date: May 24, 2016
  * Main Contact: Kijung Shin (kijungs@cs.cmu.edu)
  *
@@ -13,6 +13,9 @@
  * =================================================================================
  */
 package corescope.singlepass;
+
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 
 import java.io.*;
 import java.util.Arrays;
@@ -94,11 +97,16 @@ public class SinglePass {
 
         //Step 1. (Streaming). sample edges and compute $n$ and $m$.
         final BufferedReader br = new BufferedReader(new FileReader(path));
-        final List<Long> edges = new LinkedList(); // sampled edges
+        final int lengthOfArray = 10000;
+        LinkedList<LongArrayList> listOfArrays = new LinkedList<LongArrayList>();
+        LongArrayList array = new LongArrayList(lengthOfArray);
+        Int2IntOpenHashMap nodeToIndex = new Int2IntOpenHashMap();
+
         int maxIndex = 0; // max vertex index
         int minIndex = Integer.MAX_VALUE; // min vertex index
         long n = 0; // number of vertices
         long m = 0; // number of edges
+        int indexInArray = 0;
         while(true) {
             String line = br.readLine();
             if(line == null) {
@@ -110,17 +118,27 @@ public class SinglePass {
             if(src > trg) {
                 continue;
             }
-            else {
-                m++;
-                if(random.nextDouble() < p) {
-                    edges.add(((long)src) * Integer.MAX_VALUE + trg);
-                    edges.add(((long)trg) * Integer.MAX_VALUE + src);
-                    maxIndex = Math.max(trg, Math.max(src, maxIndex));
-                    minIndex = Math.min(trg, Math.min(src, minIndex));
+            else if(random.nextDouble() < p) {
+                if(!nodeToIndex.containsKey(src)) {
+                    nodeToIndex.put(src, nodeToIndex.size());
+                }
+                if(!nodeToIndex.containsKey(trg)) {
+                    nodeToIndex.put(trg, nodeToIndex.size());
+                }
+                array.add(nodeToIndex.get(src) * ((long)Integer.MAX_VALUE) + nodeToIndex.get(trg));
+                indexInArray++;
+                if(indexInArray == lengthOfArray) {
+                    listOfArrays.add(array);
+                    array = new LongArrayList(lengthOfArray);
+                    indexInArray = 0;
                 }
             }
+            maxIndex = Math.max(trg, Math.max(src, maxIndex));
+            minIndex = Math.min(trg, Math.min(src, minIndex));
+            m++;
         }
         br.readLine();
+        listOfArrays.add(array);
         n = maxIndex - minIndex;
 
 
@@ -130,46 +148,38 @@ public class SinglePass {
         }
 
         //Step 2. load a sampled graph in memory
-        final int lineNum = edges.size();
-        final long[] lineArr = new long[lineNum];
-        for(int i=0; i<lineNum; i++) {
-            lineArr[i] = edges.remove(0);
-        }
-        Arrays.sort(lineArr);
-        final int[][] graph = new int[maxIndex+1][];
-        long previousLine = 0;
-        int previousSrc = 0;
-        final List<Integer> neighbors = new LinkedList();
-        for(long line : lineArr) {
-            if(line==previousLine)
-                continue;
-            int src = (int) (line/Integer.MAX_VALUE);
-            int trg = (int) (line - Integer.MAX_VALUE*src);
-            if(src!= previousSrc) {
-                graph[previousSrc] = new int[neighbors.size()];
-                int index = 0;
-                for(int neighbor : neighbors) {
-                    graph[previousSrc][index++] = neighbor;
-                }
-                neighbors.clear();
-                previousSrc = src;
-            }
-            neighbors.add(trg);
-            previousLine = line;
-        }
-        graph[previousSrc] = new int[neighbors.size()];
-        int index = 0;
-        for(int neighbor : neighbors) {
-            graph[previousSrc][index++] = neighbor;
-        }
-        for(int i=0; i<=maxIndex; i++) {
-            if(graph[i]==null) {
-                graph[i] = new int[0];
+        int sampledNodeNum = nodeToIndex.size();
+        nodeToIndex.clear();
+        nodeToIndex = null;
+
+        int[] nodeToDegree = new int[sampledNodeNum];
+        for(LongArrayList lines : listOfArrays) {
+            for (long line : lines) {
+                int src = (int) (line / Integer.MAX_VALUE);
+                nodeToDegree[src]++;
             }
         }
 
+        int[][] sampledGraph = new int[sampledNodeNum][];
+        for(int i=0; i<sampledNodeNum; i++) {
+            if(nodeToDegree[i] > 0) {
+                sampledGraph[i] = new int[nodeToDegree[i]];
+            }
+        }
+
+        while(!listOfArrays.isEmpty()) {
+            LongArrayList lines = listOfArrays.remove();
+            for (long line : lines) {
+                int src = (int) (line / Integer.MAX_VALUE);
+                int trg = (int) (line - Integer.MAX_VALUE * src);
+                sampledGraph[src][--nodeToDegree[src]] = trg;
+            }
+            lines.clear();
+        }
+        nodeToDegree = null;
+
         //Step 3. Estimate the number of triangles
-        final long sampleCount = TriangleCount.run(graph);
+        final long sampleCount = TriangleCount.run(sampledGraph);
         final long delta = p >= 1.0 ? sampleCount : (long) (sampleCount / p / p / p);
 
         //Step 4. Estimate degeneracy
