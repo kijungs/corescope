@@ -21,7 +21,7 @@ For demo, please type 'make'
 
 Reference
 ========================
-If you use this code as part of any published research, please acknowledge the following paper.
+If you use this code as part of any published research, please acknowledge the following papers.
 ```
 @inproceedings{shin2016corescope,
   author    = {Kijung Shin and Tina Eliassi-Rad and Christos Faloutsos},
