@@ -3,8 +3,8 @@
  * CoreScope: Graph Mining Using k-Core Analysis - Patterns, Anomalies, and Algorithms
  * Authors: Kijung Shin, Tina Eliassi-Rad, and Christos Faloutsos
  *
- * Version: 1.0
- * Date: May 24, 2016
+ * Version: 2.0
+ * Date: Mar 9, 2017
  * Main Contact: Kijung Shin (kijungs@cs.cmu.edu)
  *
  * This software is free of charge under research purposes.
@@ -12,10 +12,12 @@
  *
  * =================================================================================
  */
+
 package corescope.anomaly;
 
 import corescope.CoreDecomp;
 import corescope.Import;
+import corescope.TrussDecomp;
 import org.apache.commons.math3.stat.ranking.NaNStrategy;
 import org.apache.commons.math3.stat.ranking.NaturalRanking;
 import org.apache.commons.math3.stat.ranking.RankingAlgorithm;
@@ -45,7 +47,7 @@ public class CoreA {
         final String input = args[0];
         final String output = args[1];
 
-        run(Import.load(input, "\t"), output);
+        run(Import.load(input, "\t"), output, false);
     };
 
     private static void printError() {
@@ -53,15 +55,15 @@ public class CoreA {
     }
 
     /**
-     * run anomaly detection algorithm based on core decomposition
+     * run anomaly detection algorithm based on core or truss decomposition
      * @param graph input graph
      * @param output path of the output file
      * @throws IOException
      */
-    public static void run(int[][] graph, String output) throws IOException {
+    public static void run(int[][] graph, String output, boolean useTruss) throws IOException {
 
         final int n = graph.length;
-        final int[] coreness = CoreDecomp.run(graph, false);
+        final int[] coreness = useTruss ? TrussDecomp.run(graph, false) : CoreDecomp.run(graph, false);
         final int[] degree = Degree.run(graph);
 
         final RankingAlgorithm rankAlgoSeq = new NaturalRanking(NaNStrategy.FAILED, TiesStrategy.SEQUENTIAL);
@@ -78,7 +80,7 @@ public class CoreA {
 
         // write results in descending order of anomaly score
         final BufferedWriter bw = new BufferedWriter(new FileWriter(output));
-        bw.write("rank" + "\t" + "vertex_index" + "\t" + "anomaly_score" + "\t" + "coreness" + "\t" + "degree");
+        bw.write("rank" + "\t" + "vertex_index" + "\t" + "anomaly_score" + "\t" + (useTruss ? "trussness" : "coreness") + "\t" + "degree");
         bw.newLine();
         for(int i = n - 1; i >= 0; i--) {
             final int index = orderedIndices[i];

@@ -3,8 +3,8 @@
  * CoreScope: Graph Mining Using k-Core Analysis - Patterns, Anomalies, and Algorithms
  * Authors: Kijung Shin, Tina Eliassi-Rad, and Christos Faloutsos
  *
- * Version: 1.0
- * Date: May 24, 2016
+ * Version: 2.0
+ * Date: Mar 9, 2017
  * Main Contact: Kijung Shin (kijungs@cs.cmu.edu)
  *
  * This software is free of charge under research purposes.
@@ -12,11 +12,13 @@
  *
  * =================================================================================
  */
+
 package corescope.anomaly;
 
 import corescope.CoreDecomp;
 import corescope.Import;
 import corescope.Pair;
+import corescope.TrussDecomp;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -24,7 +26,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DSM {
+public class CombineCoreA {
 
     /**
      * Main function
@@ -41,27 +43,27 @@ public class DSM {
         final String output = args[1];
         final int weight = Integer.valueOf(args[2]);
 
-        run(Import.load(input, "\t"), output, weight);
+        run(Import.load(input, "\t"), output, weight, false);
     };
 
     private static void printError() {
-        System.err.println("Usage: run_comb.sh input_path output_path weight");
+        System.err.println("Usage: run_comb_coreA.sh input_path output_path weight");
         System.err.println("weight should be greater than or equal to 0");
         System.err.println("weight should be set 0 to run simple DSM without CoreA");
     }
 
     /**
-     * Run DSM with the given graph and CoreA scores for nodes
+     * Run CombineCoreA with the given graph and CoreA scores for nodes
      * @param graph input graph
      * @param output path of the output file
      * @param weight weight that result of CoreA is multiplied by for being balanced with average degree
      */
-    public static void run(int[][] graph, String output, int weight) throws IOException {
+    public static void run(int[][] graph, String output, int weight, boolean useTruss) throws IOException {
 
         double[] nodeSuspiciousness = null;
         if(weight != 0) {
             int[] degree = Degree.run(graph);
-            int[] coreness = CoreDecomp.run(graph, false);
+            int[] coreness = useTruss ? TrussDecomp.run(graph, false) : CoreDecomp.run(graph, false);
             nodeSuspiciousness = CoreA.getAnomalyScore(degree, coreness);
             for(int i=0; i<nodeSuspiciousness.length; i++) {
                 nodeSuspiciousness[i] = weight * nodeSuspiciousness[i];
@@ -69,7 +71,7 @@ public class DSM {
         }
         int n = graph.length;
         int[][] result = run(graph, graph, n, n, nodeSuspiciousness, nodeSuspiciousness);
-        final Set<Integer> anomalies = new HashSet<Integer>();
+        final Set<Integer> anomalies = new HashSet();
         for(int mode=0; mode<2; mode++) {
             for(int node : result[mode]) {
                 anomalies.add(node);
@@ -96,7 +98,7 @@ public class DSM {
 
 
     /**
-     * Run DSM with the given graph and CoreA scores for nodes
+     * Run CombineCoreA with the given graph and CoreA scores for nodes
      * @param graph graph (adjacency list)
      * @param transpose transposed graph
      * @param numRows number of rows in the graph

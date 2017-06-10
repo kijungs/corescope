@@ -6,7 +6,7 @@
 
     <groupId>corscope</groupId>
     <artifactId>CoreScope</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -14,7 +14,11 @@
             <artifactId>commons-math3</artifactId>
             <version>3.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil</artifactId>
+            <version>7.2.0</version>
+        </dependency>
     </dependencies>
     
 </project>

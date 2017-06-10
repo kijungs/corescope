@@ -1,10 +1,11 @@
 CoreScope: Graph Mining Using k-Core Analysis - Patterns, Anomalies and Algorithms
 ========================
-**CoreScope** is a set of algorithms based on empirical patterns related to k-cores in real-world graphs.
+**CoreScope** is a set of algorithms based on the empirical patterns related to k-coresxs in real-world graphs.
 **CoreScope** consists of the following algorithms:
- * *CoreA*: anomaly detection algorithm based on Mirror Pattern
- * *CoreD*: streaming algorithm for degeneracy based on Core-Triangle Pattern
- * *CoreS*: influential spreader detection method based on Structured Core Pattern
+ * *Core-A*: anomaly detection algorithm based on Mirror Pattern
+ * *Truss-A*: anomaly detection algorithm based on Truss Mirror Pattern
+ * *Core-D*: streaming algorithm for degeneracy based on Core-Triangle Pattern
+ * *Core-S*: influential spreader detection method based on Structured Core Pattern
 
 Datasets
 ========================
@@ -26,6 +27,18 @@ If you use this code as part of any published research, please acknowledge the f
   author    = {Kijung Shin and Tina Eliassi-Rad and Christos Faloutsos},
   title     = {CoreScope: Graph Mining Using k-Core Analysis - Patterns, Anomalies and Algorithms},
   booktitle = {ICDM},
+  pages     = {469--478},
   year      = {2016}
+}
+
+@article{shin2017pattern,
+  author={Kijung Shin and Tina Eliassi-Rad and Christos Faloutsos},
+  title={Patterns and Anomalies in k-Cores of Real-World Graphs with Applications},
+  journal={Knowledge and Information Systems},
+  volume={PP},
+  number={PP},
+  pages={PP},
+  year={PP},
+  publisher={Springer}
 }
 ```

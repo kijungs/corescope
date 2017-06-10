@@ -4,8 +4,14 @@ echo [DEMO] running anomaly detection using CoreA...
 ./run_coreA.sh example_graph.tsv output_demo/coreA_result.tsv
 echo [DEMO] anomaly scores are saved in output_demo/coreA_result.tsv
 echo [DEMO] running anomaly detection using DSM+CoreA...
-./run_comb.sh example_graph.tsv output_demo/comb_result.tsv 1
-echo [DEMO] detected anomalous nodes are saved in output_demo/comb_result.tsv
+./run_comb_coreA.sh example_graph.tsv output_demo/comb_coreA_result.tsv 1
+echo [DEMO] detected anomalous nodes are saved in output_demo/comb_coreA_result.tsv
+echo [DEMO] running anomaly detection using TrussA...
+./run_trussA.sh example_graph.tsv output_demo/trussA_result.tsv
+echo [DEMO] anomaly scores are saved in output_demo/trussA_result.tsv
+echo [DEMO] running anomaly detection using DSM+TrussA...
+./run_comb_trussA.sh example_graph.tsv output_demo/comb_trussA_result.tsv 1
+echo [DEMO] detected anomalous nodes are saved in output_demo/comb_trussA_result.tsv
 echo [DEMO] running CoreD...
 ./run_coreD.sh example_graph.tsv overall 0.1
 echo [DEMO] estimated degeneracy is printed
