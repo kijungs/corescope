@@ -31,14 +31,16 @@ If you use this code as part of any published research, please acknowledge the f
   year      = {2016}
 }
 
-@article{shin2017pattern,
+@article{shin2018pattern,
   author={Kijung Shin and Tina Eliassi-Rad and Christos Faloutsos},
   title={Patterns and Anomalies in k-Cores of Real-World Graphs with Applications},
   journal={Knowledge and Information Systems},
-  volume={PP},
-  number={PP},
-  pages={PP},
-  year={PP},
+  volume={54},
+  number={3},
+  pages={677--710},
+  year={2018},
+  issn={0219-3116},
+  doi={10.1007/s10115-017-1077-6},
   publisher={Springer}
 }
 ```
